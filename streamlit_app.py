@@ -55,7 +55,6 @@ purine_max = int(df['总嘌呤'].max())
 
 # 页面布局
 st.markdown("# 🍲 食物嘌呤含量查询系统")
-st.markdown("### 数据来源：国家粮食局食物成分监测中心")
 
 # 主搜索框
 search_term = st.text_input(
@@ -143,25 +142,19 @@ if has_active_filter:
             use_container_width=True
         )
     else:
-        st.warning("⚠ 未找到匹配结果，请调整筛选条件")
+        st.warning("⚠ 未能找到匹配结果")
 else:
     st.info("🔍 请输入搜索词或设置筛选条件以显示结果")
 
 # 数据分析模块
-st.markdown("## 📊 数据洞察")
-viz_cols = st.columns(2)
 
-with viz_cols[0]:
-    st.markdown("### 品类嘌呤分布")
-    category_avg = df.groupby('食物类')['总嘌呤'].mean().sort_values(ascending=False)
-    st.bar_chart(category_avg)
+st.markdown("### 高嘌呤食物TOP10")
+top10 = df.nlargest(10, '总嘌呤')[['食物名称', '总嘌呤']]
+st.dataframe(
+    top10,
+    column_config={"总嘌呤": "含量 (mg)"},
+    hide_index=True,
+    height=400
+)
 
-with viz_cols[1]:
-    st.markdown("### 高嘌呤食物TOP10")
-    top10 = df.nlargest(10, '总嘌呤')[['食物名称', '总嘌呤']]
-    st.dataframe(
-        top10,
-        column_config={"总嘌呤": "含量 (mg)"},
-        hide_index=True,
-        height=400
-    )
+st.markdown("数据来源：国家粮食局食物成分监测中心")
